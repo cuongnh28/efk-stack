@@ -16,6 +16,7 @@ services:
 
   fluentd:
     build: ./fluentd
+    container_name: fluentd
     volumes:
       - ./fluentd/conf:/fluentd/etc
     links: # Sends incoming logs to the elasticsearch container.
@@ -28,6 +29,7 @@ services:
 
   elasticsearch:
     image: elasticsearch:8.7.1
+    container_name: elasticsearch
     expose:
       - 9200
     environment:
@@ -38,6 +40,7 @@ services:
 
   kibana:
     image: kibana:8.7.1
+    container_name: kibana
     links: # Links kibana service to the elasticsearch container
       - elasticsearch
     depends_on:
