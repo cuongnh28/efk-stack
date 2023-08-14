@@ -1,0 +1,51 @@
+services:
+  # Deploy using the custom image automatically be created during the build process.
+  web:
+    image: cuongnh28/backend
+    container_name: backend
+    ports:
+      - "8080:8080"
+    links:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: backend.access
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links: # Sends incoming logs to the elasticsearch container.
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    ports: # Exposes the port 24224 on both TCP and UDP protocol for log aggregation
+      - 24224:24224
+      - 24224:24224/udp
+
+  elasticsearch:
+    image: elasticsearch:8.7.1
+    expose:
+      - 9200
+    environment:
+      - discovery.type=single-node # Runs as a single-node
+      - xpack.security.enabled=false
+    volumes: # Stores elasticsearch data locally on the esdata Docker volume
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: kibana:8.7.1
+    links: # Links kibana service to the elasticsearch container
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    environment: # Defined host configuration
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+# Define the Docker volume named esdata for the Elasticsearch container.
+volumes:
+  esdata:
