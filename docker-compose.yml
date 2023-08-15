@@ -1,7 +1,21 @@
 version: "3"
 services:
-  # Deploy using the custom image automatically be created during the build process.
-  web:
+  frontend:
+    image: cuongnh28/frontend
+    container_name: frontend
+    ports:
+      - "8081:8081"
+    links:
+      - fluentd
+    depends_on:
+      - backend
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: frontend.access
+
+  backend:
     image: cuongnh28/backend
     container_name: backend
     ports:
