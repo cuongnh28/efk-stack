@@ -2,7 +2,7 @@ version: "3"
 services:
   frontend:
     image: cuongnh28/frontend
-    container_name: frontend
+#    container_name: frontend
     ports:
       - "8081:8081"
     links:
@@ -17,7 +17,7 @@ services:
 
   backend:
     image: cuongnh28/backend
-    container_name: backend
+#    container_name: backend
     ports:
       - "8080:8080"
     links:
